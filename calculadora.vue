@@ -1,60 +1,38 @@
 <template>
   <div class="container">
     <header>
-      <img src="https://www.infoenem.com.br/wp-content/uploads/2016/12/iesb.jpg" alt />
       <h1>Calculadora de média</h1>
     </header>
 
     <article>
       <section>
-        <h2>Digite aqui as suas notas:</h2>
-
-        <div class="input-group">
-          <label for="nota-p1">P1:</label>
-          <input v-model="p1" type="number" step="any" id="nota-p1" />
-        </div>
-
-        <div class="input-group">
-          <label for="nota-p2">P2:</label>
-          <input v-model="p2" type="number" step="any" id="nota-p2" />
-        </div>
+        <input v-model="p1" placeholder="Prova 1" type="number" step="any" min="0" max="10" />
+        <input v-model="p2" placeholder="Prova 2" type="number" step="any" min="0" max="10" />
       </section>
 
       <section>
-        <h2>Aqui estão seus resultados:</h2>
-
-        <table>
-          <tr v-if="p1 != 0 && p2 == 0">
-            <td>Nota necessária para a P2:</td>
-            <td>{{ calcP2 }}</td>
-          </tr>
-          <tr v-if="p2 != 0 && !aproved">
-            <td>Nota necessária para a P3:</td>
-            <td>{{ calcP3 }}</td>
-          </tr>
-          <tr v-if="p2 != 0 && !aproved">
-            <td>Prova a ser substituida pela P3:</td>
-            <td>{{ subs }}</td>
-          </tr>
-          <tr>
-            <td>Média atual:</td>
-            <td>{{ res }}</td>
-          </tr>
-          <tr v-if="p2 != 0">
-            <td>Situação atual:</td>
-            <td v-if="aproved">Aprovado :)</td>
-            <td v-else>Reprovado :(</td>
-          </tr>
-        </table>
+        <div class="row" :class="p1 && !p2 ? 'active' : ''">
+          <p>Necessário para a P2</p>
+          <p class="value">{{calcP2}}</p>
+        </div>
+        <div class="row" :class="p1 && p2 && !approved ? 'active' : ''">
+          <p>Necessário para a P3</p>
+          <p class="value">{{ calcP3 }}</p>
+        </div>
+        <div class="row" :class="p1 && p2 && !approved ? 'active' : ''">
+          <p>Prova a ser substituída</p>
+          <p class="value">{{ p1 && p2 ? subs : '-' }}</p>
+        </div>
+        <div class="row" :class="p1 && p2 ? 'active' : ''">
+          <p>Média</p>
+          <p class="value">{{ media }}</p>
+        </div>
+        <div class="row" :class="p1 && p2 ? 'active' : ''">
+          <p>Situação atual</p>
+          <p class="value">{{ p1 && p2 ? ( approved ? 'Aprovado' : 'Reprovado' ) : '-' }}</p>
+        </div>
       </section>
     </article>
-    <small v-if="p2 > 10 || p1 > 10">É um prodígio tirando mais que a média...</small>
-    <small v-if="p1 != 0 && p2 == 0">
-      Não é possível fazer a
-      <strong>P3</strong> se não tirar mais que
-      <strong>0</strong> na
-      <strong>P2.</strong>
-    </small>
   </div>
 </template>
 
@@ -62,8 +40,8 @@
 export default {
   data() {
     return {
-      p1: 0,
-      p2: 0
+      p1: "",
+      p2: ""
     };
   },
 
@@ -103,59 +81,43 @@ export default {
       if (nota1 > 5 || nota2 > 5) return nota1 < nota2 ? "P2" : "P1";
       return nota1 > nota2 ? "P2" : "P1";
     },
-    res() {
+    media() {
       let nota = this.p1 * 0.4 + this.p2 * 0.6;
       return parseFloat(nota.toFixed(2));
     },
-    aproved() {
-      return this.res >= 5;
+    approved() {
+      return this.media >= 5;
     }
   }
 };
 </script>
 
 <style>
-*,
-*::before,
-*::after {
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: #fff;
-  color: white;
-  min-height: 100vh;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .container {
   display: block;
-  padding: 20px;
-  background: #ec0000;
-  border-radius: 3px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  padding: 30px;
+  border-radius: 15px;
+  border: 2px solid #313131;
+  transition: border 1s ease-in-out;
+}
+
+.container:hover {
+  animation: glowRed 5s infinite alternate;
+  border: 2px solid #ec0000;
+}
+
+@keyframes glowRed {
+  from {
+    box-shadow: 0 0 0px #ec0000, inset 0 0 0px #ec0000;
+  }
+  to {
+    box-shadow: 0 0 15px #ec0000, inset 0 0 15px #ec0000;
+  }
 }
 
 header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.192);
-}
-
-header h1 {
-  margin: 10px;
-}
-
-header img {
-  width: 100px;
+  text-align: center;
+  color: #999999;
 }
 
 article {
@@ -163,55 +125,69 @@ article {
 }
 
 section {
-  padding: 10px;
-  margin: 10px;
-  border-radius: 2px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-  background: #2b2d42;
+  padding: 30px;
+  margin: 30px;
+  border-radius: 15px;
+  box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.1),
+    5px 5px 10px rgba(0, 0, 0, 0.3),
+    inset -5px -5px 10px rgba(255, 255, 255, 0.1),
+    inset 5px 5px 10px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
-}
-
-table {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+  width: 300px;
+  height: 250px;
   justify-content: space-around;
+  align-items: space-between;
+  border: 2px solid #581a1a;
 }
 
-tr {
-  display: flex;
-  justify-content: space-between;
-  padding-bottom: 10px;
-  margin-bottom: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.192);
+.active {
+  color: white !important;
+  text-shadow: 0 0 2px white;
 }
 
-td:last-child {
-  font-weight: bolder;
-  font-size: 1.2rem;
-}
-
-section h2 {
-  margin-bottom: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.192);
-}
-
-.input-group {
+.row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  color: #414141;
+  transition: color 300ms ease-in-out;
+}
+
+.row .value {
+  font-size: 1.5em;
 }
 
 input {
-  border-radius: 2px;
+  border-radius: 15px;
   border: none;
-  padding: 5px;
-  font-size: 1rem;
+  width: 100%;
+  padding: 10px 20px;
+  font-size: 1.5rem;
   font-weight: bold;
-  width: 75px;
   text-align: center;
+  margin: 10px 0;
+
+  border: 3px solid #313131;
+  background: none;
+  color: white;
+  transition: border 300ms ease-in-out;
+}
+
+input:focus,
+input:active {
+  border: 3px solid white;
+  outline: none;
+  animation: glowWhite 5s infinite alternate;
+}
+
+@keyframes glowWhite {
+  from {
+    box-shadow: 0 0 0 white, inset 0 0 0 white;
+  }
+  to {
+    box-shadow: 0 0 5px white, inset 0 0 5px white;
+  }
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -225,10 +201,14 @@ input[type="number"]::-webkit-outer-spin-button {
 @media (max-width: 768px) {
   header h1 {
     font-size: 1.5rem;
+    margin: 20px 0;
   }
 
-  .container {
+  .container,
+  .container:hover {
     padding: 5px;
+    border: none;
+    animation: none;
   }
 
   article {
@@ -236,7 +216,7 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 
   section {
-    margin: 10px 0;
+    margin: 10px;
   }
 }
 </style>
