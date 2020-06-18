@@ -13,11 +13,11 @@
       <section>
         <div class="row" :class="p1 && !p2 ? 'active' : ''">
           <p>Necessário para a P2</p>
-          <p class="value">{{calcP2}}</p>
+          <p class="value">{{ calcP2 | round }}</p>
         </div>
         <div class="row" :class="p1 && p2 && !approved ? 'active' : ''">
           <p>Necessário para a P3</p>
-          <p class="value">{{ calcP3 }}</p>
+          <p class="value">{{ calcP3 | round }}</p>
         </div>
         <div class="row" :class="p1 && p2 && !approved ? 'active' : ''">
           <p>Prova a ser substituída</p>
@@ -25,7 +25,7 @@
         </div>
         <div class="row" :class="p1 && p2 ? 'active' : ''">
           <p>Média</p>
-          <p class="value">{{ media }}</p>
+          <p class="value">{{ media | round }}</p>
         </div>
         <div class="row" :class="p1 && p2 ? 'active' : ''">
           <p>Situação atual</p>
@@ -41,8 +41,15 @@ export default {
   data() {
     return {
       p1: "",
-      p2: ""
+      p2: "",
+      media_ap: 4.96
     };
+  },
+
+  filters: {
+    round: function(number) {
+      return number.toFixed(2);
+    }
   },
 
   computed: {
@@ -51,7 +58,7 @@ export default {
 
       nota = (this.p1 * 0.4 * -1 + 5) / 0.6;
 
-      if (nota >= 0) return parseFloat(nota.toFixed(2));
+      if (nota >= 0) return nota;
       return 0;
     },
     calcP3() {
@@ -60,33 +67,27 @@ export default {
       nota1 = (this.p1 * 0.4 * -1 + 5) / 0.6;
       nota2 = (this.p2 * 0.6 * -1 + 5) / 0.4;
 
-      nota =
-        nota1 > nota2
-          ? parseFloat(nota1.toFixed(2))
-          : parseFloat(nota2.toFixed(2));
-      if (nota1 > 5 || nota2 > 5)
-        nota =
-          nota1 < nota2
-            ? parseFloat(nota1.toFixed(2))
-            : parseFloat(nota2.toFixed(2));
+      nota = nota1 > nota2 ? nota1 : nota2;
+      if (nota1 > 5 || nota2 > 5) nota = nota1 < nota2 ? nota1 : nota2;
 
       return nota >= 0 ? nota : 0;
     },
     subs() {
       let nota1, nota2;
 
-      nota1 = (this.p1 * 0.4 * -1 + 5) / 0.6;
-      nota2 = (this.p2 * 0.6 * -1 + 5) / 0.4;
+      nota1 = (5 - this.p1 * 0.4) / 0.6;
+      nota2 = (5 - this.p2 * 0.6) / 0.4;
 
-      if (nota1 > 5 || nota2 > 5) return nota1 < nota2 ? "P2" : "P1";
+      if (nota1 > this.media_ap || nota2 > this.media_ap)
+        return nota1 < nota2 ? "P2" : "P1";
       return nota1 > nota2 ? "P2" : "P1";
     },
     media() {
       let nota = this.p1 * 0.4 + this.p2 * 0.6;
-      return parseFloat(nota.toFixed(2));
+      return nota;
     },
     approved() {
-      return this.media >= 5;
+      return this.media >= this.media_ap;
     }
   }
 };
