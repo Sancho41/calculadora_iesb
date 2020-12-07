@@ -154,7 +154,7 @@ section {
   display: flex;
   flex-direction: column;
   width: 300px;
-  height: 250px;
+  height: 280px;
   justify-content: space-around;
   align-items: space-between;
   border: 2px solid #581a1a;
