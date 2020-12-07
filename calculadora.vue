@@ -66,7 +66,7 @@ export default {
         return "MI"
       else if (number >= 0.1)
         return "II"
-      return "II"
+      return "SR"
     }
   },
 
