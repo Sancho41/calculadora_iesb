@@ -56,7 +56,6 @@ export default {
     },
     mencao: function (nota) {
       const number = new Number(nota);
-      console.log({number})
       if (number >= 9)
         return "SS";
       else if (number >= 7)
