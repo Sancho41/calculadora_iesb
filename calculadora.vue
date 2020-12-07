@@ -31,6 +31,10 @@
           <p>Situação atual</p>
           <p class="value">{{ p1 && p2 ? ( approved ? 'Aprovado' : 'Reprovado' ) : '-' }}</p>
         </div>
+        <div class="row" :class="p1 && p2 ? 'active' : ''">
+          <p>Menção</p>
+          <p class="value">{{ media | round | mencao }}</p>
+        </div>
       </section>
     </article>
   </div>
@@ -49,6 +53,21 @@ export default {
   filters: {
     round: function(number) {
       return number.toFixed(2);
+    },
+    mencao: function (nota) {
+      const number = new Number(nota);
+      console.log({number})
+      if (number >= 9)
+        return "SS";
+      else if (number >= 7)
+        return "MS"
+      else if (number >= 5)
+        return "MM"
+      else if (number >= 3)
+        return "MI"
+      else if (number >= 0.1)
+        return "II"
+      return "II"
     }
   },
 
